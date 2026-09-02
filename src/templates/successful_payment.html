@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Платёж успешен</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/payment.css') }}">
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-card success">
+            <div class="success-icon">✓</div>
+            <h1>Платёж выполнен успешно!</h1>
+            <p class="message">Спасибо за оплату. Ваша сессия зарезервирована.</p>
+            <p class="details">Проверьте вашу почту для деталей урока.</p>
+        </div>
+    </div>
+</body>
+</html>

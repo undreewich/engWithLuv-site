@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ошибка платежа</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/payment.css') }}">
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-card error">
+            <div class="error-icon">✕</div>
+            <h1>Платёж не выполнен</h1>
+            <p class="message">К сожалению, возникла проблема с обработкой платежа.</p>
+            <p class="details">Пожалуйста, попробуйте ещё раз или свяжитесь с поддержкой.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Политика конфиденциальности - Luv English Tutor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .privacy-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .privacy-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .privacy-title {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .language-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ddd;
+        }
+        .tab-button {
+            padding: 10px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-button.active {
+            border-bottom-color: #667eea;
+            color: #667eea;
+            font-weight: bold;
+        }
+        .privacy-content {
+            line-height: 1.6;
+            color: #555;
+        }
+        .privacy-section {
+            margin-bottom: 30px;
+        }
+        .privacy-section h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        .privacy-section h3 {
+            color: #444;
+            margin: 20px 0 10px 0;
+            font-size: 1.2em;
+        }
+        .privacy-section p {
+            margin-bottom: 15px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        .back-link:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="privacy-container">
+        <header class="privacy-header">
+            <h1 id="privacy-title" class="privacy-title">Политика конфиденциальности</h1>
+            <p>English with Luv</p>
+        </header>
+
+        <div class="language-tabs">
+            <button class="tab-button active" onclick="showLanguage('ru')">Русский</button>
+            <button class="tab-button" onclick="showLanguage('en')">English</button>
+            <!--<button class="tab-button" onclick="showLanguage('sr')">Srpski</button> -->
+        </div>
+
+        <div id="ru-content" class="privacy-content">
+            <div class="privacy-section">
+                <h2>1. Политика Конфиденциальности сайта engwithluv.site</h2>
+                <p>Администрация сайта engwithluv.site обязуется сохранять вашу конфиденциальность в Интернете. Мы уделяем большое значение охране предоставленных вами данных. Наша политика конфиденциальности основана на требованиях Общего регламента о защите персональных данных Европейского Союза (GDPR). Цели, в которых мы собираем персональные данные: улучшение работы нашего сервиса, осуществление контактов с посетителями данного сайта, предоставление информации, которую запрашивал пользователь, а так же для указанных ниже действий.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>2. ССбор и использование персональных данных</h2>
+                <p>Мы собираем и используем ваши персональные данные только в случае вашего добровольного согласия. При согласии с этим вы разрешаете нам собирать и использовать следующие данные: имя и фамилия, электронная почта, данные аккаунтов в социальных сетях. Сбор и обработка ваших данных проводится соответствии с законами, действующими на территории Европейского Союза и в государстве черногория.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>3. Защита данных</h2>
+                <p>Пользователь, предоставивший свои персональные данные сайту engwithluv.site имеет право на их изменение и удаление, а так же на отзыв своего согласия с их использованием. Срок, в течение которого будут храниться ваши персональные данные: 24 месяца. Мы можем передавать ваши личные данные третьей стороне только с вашего добровольного согласия, если они были переданы, то изменение данных в других организациях, не связанных с нами, мы осуществить не можем.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>4. Использование технических данных при посещении сайта</h2>
+                <p>При посещении вами сайта engwithluv.site в базе данных сохраняются записи о вашем IP адресе, времени посещения, настройках браузера, операционной системе, а также другая техническая информация необходимая для корректного отображения содержимого сайта. По этим данным нам невозможно идентифицировать личность посетителя.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>5. Предоставление информации детьми</h2>
+                <p>Если Вы являетесь родителем или опекуном, и вы знаете, что ваши дети предоставили нам свои личные данные без Вашего согласия, свяжитесь с нами: darya.grints@gmail.com. На нашем сервисе запрещено оставлять личные данные несовершеннолетних без согласия родителей или опекунов.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>6. Использование cookies</h2>
+                <p>Для корректного отображения содержимого и для удобства использования сайта engwithluv.site мы используем cookie файлы. Это небольшие файлы, которые хранятся на вашем устройстве. Они помогают сайту запомнить информацию о вас, например на каком языке вы просматриваете сайт и какие страницы вы уже открывали, эта информация будет полезна при следующем посещении. Благодаря файлам cookie просмотр сайта становится значительно более удобным. Вы можете настроить прием или блокировку cookie в браузере самостоятельно. Невозможность принимать cookie может ограничить работоспособность сайта.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>7. Ссылки на другие сайты</h2>
+                <p>Наш сайт engwithluv.site может содержать ссылки на другие сайты, которые не управляются нами. Мы не несем ответственность за их содержание. Мы рекомендуем вам ознакомиться с политикой конфиденциальности каждого сайта, который вы посещаете, если она там есть.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>8. Изменения в политике конфиденциальности</h2>
+                <p>Наш сайт engwithluv.site может обновлять нашу политику конфиденциальности время от времени. Мы сообщаем о любых изменениях, разместив новую политику конфиденциальности на этой странице. Мы отслеживаем изменения законодательства, касающегося персональных данных в Европейском Союзе и в государстве черногория. Если вы оставили персональные данные у нас, то мы оповестим вас об изменении в политике конфиденциальности. Если ваши персональные данные были введены не корректно, то мы не сможем с вами связаться.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>9. Обратная связь, заключительные положения</h2>
+                <p>Связаться с администрацией сайта engwithluv.site по вопросам, связанным с политикой конфиденциальности можно по адресу: darya.grints@gmail.com. Если вы не согласны с данной политикой конфиденциальности, вы не можете пользоваться услугами сайта engwithluv.site, в этом случае вы должны воздержаться от посещения нашего сайта.</p>
+            </div>
+
+        </div>
+
+        <div id="en-content" class="privacy-content" style="display: none;">
+            <div class="privacy-section">
+                <h2>1. Privacy Policy of engwithluv.site</h2>
+                <p>The administration of the engwithluv.site website is committed to maintaining your privacy on the Internet. We attach great importance to the protection of the data you provide. Our privacy policy is based on the requirements of the General Data Protection Regulation of the European Union (GDPR). We collect personal data for the following purposes: to improve our service, to communicate with visitors to this site, to provide information requested by the user, and for the actions specified below.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>2. Collection and Use of Personal Data</h2>
+                <p>We collect and use your personal data only with your voluntary consent. By agreeing to this, you authorize us to collect and use the following information:</p>
+                <ul>
+                    <li>First and last name</li>
+                    <li>Email address</li>
+                    <li>Social media account data</li>
+                </ul>
+                <p>The collection and processing of your data are carried out in accordance with the laws effective within the European Union and the State of Montenegro.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>3. Data Storage, Modification, and Deletion</h2>
+                <p>Any user who has provided their personal data to engwithluv.site has the right to modify or delete it, as well as to withdraw their consent for its use.</p>
+                <ul>
+                    <li>Storage Period: Your personal data will be stored for 24 months.</li>
+                    <li>Third Parties: We may transfer your personal data to a third party only with your voluntary consent. Once data has been transferred to organizations not affiliated with us, we cannot perform modifications to that data within those organizations.</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2>4. Use of Technical Data During Website Visits</h2>
+                <p>When you visit engwithluv.site, our database stores records of your IP address, time of visit, browser settings, operating system, and other technical information required for the correct display of the website content. It is impossible for us to identify an individual visitor's identity using this data.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>5. Information Provided by Children</h2>
+                <p>If you are a parent or guardian and you are aware that your children have provided us with their personal data without your consent, please contact us at: darya.grints@gmail.com. Our service prohibits leaving the personal data of minors without the consent of parents or guardians.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>6. Use of Cookies</h2>
+                <p>To display content correctly and for the convenience of using engwithluv.site, we use cookies. These are small files stored on your device. They help the site remember information about you, such as the language in which you view the site and which pages you have already opened; this information will be useful during your next visit. Cookies make browsing significantly more convenient.</p>
+                <ul>
+                    <li>You can independently configure the acceptance or blocking of cookies in your browser.</li>
+                    <li>Disabling cookies may limit the functionality of the website.</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2>7. Links to Other Sites</h2>
+                <p>Our website, engwithluv.site, may contain links to other sites that are not operated by us. We are not responsible for their content. We recommend that you review the privacy policy of every site you visit, if one is available.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>8. Changes to the Privacy Policy</h2>
+                <p>engwithluv.site may update our privacy policy from time to time. We will notify you of any changes by posting the new privacy policy on this page. We monitor changes in legislation regarding personal data in the European Union and the State of Montenegro.</p>
+                <ul>
+                    <li>If you have provided us with personal data, we will notify you of any changes to the privacy policy.</li>
+                    <li>If your personal data was entered incorrectly, we will not be able to contact you.</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2>9. Feedback and Final Provisions</h2>
+                <p>You can contact the administration of engwithluv.site regarding questions related to the privacy policy at: darya.grints@gmail.com. If you do not agree with this privacy policy, you may not use the services of engwithluv.site, and in such a case, you should refrain from visiting our website.</p>
+            </div>
+        </div>
+
+        <div id="sr-content" class="privacy-content" style="display: none;">
+            <div class="privacy-section">
+                <h2>1. Opšte odredbe</h2>
+                <p>Ova politika privatnosti opisuje kako prikupljamo, koristimo i štitimo vaše lične podatke prilikom korišćenja naše veb stranice i usluga.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>2. Prikupljene informacije</h2>
+                <p>Možemo prikupljati sledeće vrste informacija:</p>
+                <ul>
+                    <li>Lične informacije (ime, kontakt podaci)</li>
+                    <li>Informacije o preferencijama učenja</li>
+                    <li>Tehničke informacije (IP adresa, tip pregledača)</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2>3. Korišćenje informacija</h2>
+                <p>Prikupljene informacije se koriste za:</p>
+                <ul>
+                    <li>Pružanje obrazovnih usluga</li>
+                    <li>Kontaktiranje u vezi sa stvarima učenja</li>
+                    <li>Poboljšanje kvaliteta naših usluga</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2>4. Zaštita podataka</h2>
+                <p>Preduzimamo sve neophodne mere da zaštitimo vaše lične podatke od neovlašćenog pristupa, izmene, otkrivanja ili uništenja.</p>
+            </div>
+
+            <div class="privacy-section">
+                <h2>5. Vaša prava</h2>
+                <p>Vi imate pravo da:</p>
+                <ul>
+                    <li>Zatražite pristup svojim podacima</li>
+                    <li>Zatražite ispravku netačnih informacija</li>
+                    <li>Zatražite brisanje svojih podataka</li>
+                </ul>
+            </div>
+
+            <div class="privacy-section">
+                <h2>6. Kontakt</h2>
+                <p>Ako imate bilo kakva pitanja o ovoj politici privatnosti, molimo vas da nas kontaktirate:</p>
+                <p>Email: info@luvtutor.com</p>
+                <p>Telegram: @luuvburn</p>
+            </div>
+        </div>
+
+        <a href="/" class="back-link">← Вернуться на главную</a>
+    </div>
+
+    <script>
+        const titles = {
+            'ru': 'Политика конфиденциальности',
+            'en': 'Privacy Policy',
+            'sr': 'Politika privatnosti'
+        };
+
+        function showLanguage(lang) {
+            // Hide all content
+            document.getElementById('ru-content').style.display = 'none';
+            document.getElementById('en-content').style.display = 'none';
+            document.getElementById('sr-content').style.display = 'none';
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected content and activate tab
+            document.getElementById(lang + '-content').style.display = 'block';
+            event.target.classList.add('active');
+
+            // Update page title
+            document.getElementById('privacy-title').textContent = titles[lang];
+        }
+    </script>
+</body>
+</html>

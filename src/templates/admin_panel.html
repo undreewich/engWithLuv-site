@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админ панель</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .admin-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .admin-title {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .table-section {
+            margin-bottom: 40px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .table-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 0;
+            font-size: 1.4em;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .data-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        .data-table tr:hover {
+            background: #f5f5f5;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .logout-btn:hover {
+            background: #c82333;
+        }
+        .form-container {
+            padding: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .form-container label {
+            margin-right: 5px;
+        }
+        .form-container select,
+        .form-container input {
+            padding: 5px;
+            margin-right: 10px;
+        }
+        .form-btn {
+            padding: 8px 16px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        .form-btn:hover {
+            background: #218838;
+        }
+        .payment-link-result {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .copy-btn {
+            margin-left: 10px;
+            padding: 5px 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .copy-btn:hover {
+            background: #0056b3;
+        }
+        .edit-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #007bff;
+        }
+        .edit-btn:hover {
+            color: #0056b3;
+        }
+        .load-more-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .load-more-btn:hover {
+            background: #218838;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .modal-form label {
+            font-weight: bold;
+        }
+        .modal-form input,
+        .modal-form select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close:hover {
+            color: black;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 10px;
+            }
+            .table-section {
+                margin-bottom: 20px;
+            }
+            .data-table {
+                font-size: 0.9em;
+            }
+            .data-table th,
+            .data-table td {
+                padding: 8px 10px;
+            }
+            .form-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-container select,
+            .form-container input {
+                margin-right: 0;
+                width: 100%;
+            }
+            .form-btn {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
+            .logout-btn {
+                position: static;
+                margin-bottom: 20px;
+                width: 100%;
+            }
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="logout-btn" onclick="logout()">Выйти</button>
+
+    <div class="admin-container">
+        <header class="admin-header">
+            <h1 class="admin-title">Админ панель</h1>
+            <p>Управление данными системы</p>
+        </header>
+
+        <!-- Add Lessons Section -->
+        <section class="table-section">
+            <h2 class="table-title">Новые уроки</h2>
+            <div class="form-container">
+                <label for="addLessonsStudent">Имя:</label>
+                <select id="addLessonsStudent">
+                    <option value="">Загрузка...</option>
+                </select>
+                <label for="addLessonsPrice">Цена (€):</label>
+                <input type="number" id="addLessonsPrice" step="0.01" min="0" placeholder="0.00">
+                <label for="addLessonsCount">Количество уроков:</label>
+                <input type="number" id="addLessonsCount" min="1" placeholder="1">
+                <button class="form-btn" onclick="addLessons()">Добавить</button>
+            </div>
+        </section>
+
+        <!-- Add Payment Section -->
+        <section class="table-section">
+            <h2 class="table-title">Новая оплата</h2>
+            <div class="form-container">
+                <label for="addPaymentStudent">Имя:</label>
+                <select id="addPaymentStudent">
+                    <option value="">Загрузка...</option>
+                </select>
+                <label for="addPaymentAmount">Сумма (€):</label>
+                <input type="number" id="addPaymentAmount" step="0.01" min="0" placeholder="0.00">
+                <label for="addPaymentDate">Дата:</label>
+                <input type="date" id="addPaymentDate">
+                <button class="form-btn" onclick="addPayment()">Добавить</button>
+            </div>
+        </section>
+
+        <!-- Add Student Section -->
+        <section class="table-section">
+            <h2 class="table-title">Новый ученик</h2>
+            <div class="form-container">
+                <label for="addStudentName">Имя:</label>
+                <input type="text" id="addStudentName" placeholder="Введите имя">
+                <label for="addStudentSurname">Фамилия:</label>
+                <input type="text" id="addStudentSurname" placeholder="Введите фамилию">
+                <label for="addStudentEmail">Email:</label>
+                <input type="email" id="addStudentEmail" placeholder="example@mail.com">
+                <label for="addStudentAge">Возраст:</label>
+                <input type="number" id="addStudentAge" min="0" placeholder="18">
+                <button class="form-btn" onclick="addStudent()">Добавить</button>
+            </div>
+        </section>
+
+        <!-- Students Table -->
+        <section class="table-section">
+            <h2 class="table-title">Студенты</h2>
+            <div class="table-wrapper">
+                <table class="data-table" id="studentsTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Имя</th>
+                            <th>Фамилия</th>
+                            <th>Email</th>
+                            <th>оплачено<br>уроков</th>
+                            <th>провед<br>уроков</th>
+                            <th>оплачено<br>сумма</th>
+                            <th>провед<br>сумма</th>
+                            <th>Активен</th>
+                            <th>Возраст</th>
+                            <th>Счет</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="11" class="loading">Загрузка данных...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="load-more-btn" onclick="loadMoreStudents()">Загрузить еще</button>
+        </section>
+
+        <!-- Schedule Table -->
+        <section class="table-section">
+            <h2 class="table-title">Расписание</h2>
+            <div class="table-wrapper">
+                <table class="data-table" id="scheduleTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>День</th>
+                            <th>Час начала</th>
+                            <th>Минута начала</th>
+                            <th>Час реальный</th>
+                            <th>Минута реальная</th>
+                            <th>Студент</th>
+                            <th>Активен</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="8" class="loading">Загрузка данных...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="load-more-btn" onclick="loadMoreSchedule()">Загрузить еще</button>
+        </section>
+
+        <!-- Lessons Heap Table -->
+        <section class="table-section">
+            <h2 class="table-title">Оставшиеся уроки</h2>
+            <table class="data-table" id="lessonsHeapTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Студент</th>
+                        <th>Цена</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="3" class="loading">Загрузка данных...</td></tr>
+                </tbody>
+            </table>
+            <button class="load-more-btn" onclick="loadMoreLessonsHeap()">Загрузить еще</button>
+        </section>
+
+        <!-- Lessons History Table -->
+        <section class="table-section">
+            <h2 class="table-title">История уроков</h2>
+            <div class="table-wrapper">
+                <table class="data-table" id="lessonsHistoryTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Студент</th>
+                            <th>Цена</th>
+                            <th>Дата урока</th>
+                            <th>День</th>
+                            <th>Час реальный</th>
+                            <th>Минута реальная</th>
+                            <th>Проведен</th>
+                            <th>Пропущен</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="9" class="loading">Загрузка данных...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="load-more-btn" onclick="loadMoreLessonsHistory()">Загрузить еще</button>
+        </section>
+
+        <!-- Payments Table -->
+        <section class="table-section">
+            <h2 class="table-title">Платежи</h2>
+            <table class="data-table" id="paymentsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Студент</th>
+                        <th>Сумма</th>
+                        <th>Оплачено</th>
+                        <th>Создан</th>
+                        <th>Срок оплаты</th>
+                        <th>Ссылка</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td colspan="7" class="loading">Загрузка данных...</td></tr>
+                </tbody>
+            </table>
+            <button class="load-more-btn" onclick="loadMorePayments()">Загрузить еще</button>
+        </section>
+    </div>
+
+    <div id="createInvoiceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeInvoiceModal()">&times;</span>
+            <h2>Создать ссылку для оплаты</h2>
+            <div class="modal-form">
+                <label for="paymentLinkStudent">Выберите ученика:</label>
+                <select id="paymentLinkStudent">
+                    <option value="">Загрузка...</option>
+                </select>
+                <label for="paymentLinkAmount">Сумма (€):</label>
+                <input type="number" id="paymentLinkAmount" step="0.10" min="0" placeholder="0.00">
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeInvoiceModal()">Отмена</button>
+                    <button type="button" class="form-btn" onclick="createPaymentLink()">Создать</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for editing student -->
+    <div id="editStudentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Редактировать студента</h2>
+            <form class="modal-form" id="editStudentForm">
+                <input type="hidden" id="editStudentId">
+                <label for="editStudentName">Имя:</label>
+                <input type="text" id="editStudentName" required>
+                <label for="editStudentSurname">Фамилия:</label>
+                <input type="text" id="editStudentSurname" required>
+                <label for="editStudentEmail">Email:</label>
+                <input type="email" id="editStudentEmail" required>
+                <label for="editStudentPrepaidLessons">Предоплаченные уроки:</label>
+                <input type="number" id="editStudentPrepaidLessons" min="0" required>
+                <label for="editStudentDoneLessons">Пройденные уроки:</label>
+                <input type="number" id="editStudentDoneLessons" min="0" required>
+                <label for="editStudentPrepaidSum">Предоплаченная сумма:</label>
+                <input type="number" id="editStudentPrepaidSum" step="0.01" min="0" required>
+                <label for="editStudentUsedSum">Использованная сумма:</label>
+                <input type="number" id="editStudentUsedSum" step="0.01" min="0" required>
+                <label for="editStudentIsActive">Активен:</label>
+                <select id="editStudentIsActive" required>
+                    <option value="true">Да</option>
+                    <option value="false">Нет</option>
+                </select>
+                <label for="editStudentAge">Возраст:</label>
+                <input type="number" id="editStudentAge" min="0" required>
+                <div class="modal-buttons">
+                    <button type="button" onclick="closeModal()">Отмена</button>
+                    <button type="button" class="form-btn" onclick="saveStudentChanges()">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+</body>
+</html>
