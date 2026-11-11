@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        body {
+            background: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .register-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+        }
+        .register-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.8em;
+        }
+        .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 600;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        .form-group input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        .checkbox-group {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: #555;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+        .checkbox-item input {
+            width: auto;
+            margin-top: 2px;
+        }
+        .checkbox-item a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .checkbox-item a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: none;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .submit-btn:not(:disabled):hover {
+            opacity: 0.9;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        @media (max-width: 480px) {
+            .field-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2 class="register-title">Регистрация</h2>
+        <form id="registerForm" method="POST">
+            <div class="field-row">
+                <div class="form-group">
+                    <label for="first_name">Имя</label>
+                    <input type="text" id="first_name" name="first_name" required placeholder="Ваше имя">
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Фамилия</label>
+                    <input type="text" id="last_name" name="last_name" required placeholder="Ваша фамилия">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Возраст</label>
+                <input type="number" id="age" name="age" min="0" required placeholder="Возраст">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required placeholder="example@domain.com">
+                <div class="error-message" id="emailError">Введите корректный email</div>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required placeholder="Минимум 8 символов">
+                <div class="error-message" id="passwordError">Пароль должен содержать не менее 8 символов</div>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Подтвердите пароль</label>
+                <input type="password" id="confirm_password" name="confirm_password" required placeholder="Повторите пароль">
+                <div class="error-message" id="confirmError">Пароли не совпадают</div>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="checkbox-item">
+                    <input type="checkbox" id="privacyConsent" name="privacyConsent">
+                    <span>Я согласен с <a href="/privacy" target="_blank" rel="noopener noreferrer">Политикой конфиденциальности</a></span>
+                </label>
+                <label class="checkbox-item">
+                    <input type="checkbox" id="termsConsent" name="termsConsent">
+                    <span>Я согласен с <a href="/terms" target="_blank" rel="noopener noreferrer">Пользовательским соглашением</a></span>
+                </label>
+            </div>
+            <div class="error-message" id="agreementError">Необходимо принять Политику конфиденциальности и Пользовательское соглашение</div>
+
+            <button type="submit" class="submit-btn" id="submitBtn" disabled>Зарегистрироваться</button>
+        </form>
+        <div class="login-link">
+            Уже есть аккаунт? <a href="/login">Войти</a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('registerForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const privacyCheckbox = document.getElementById('privacyConsent');
+            const termsCheckbox = document.getElementById('termsConsent');
+
+            function updateSubmitButtonState() {
+                const isReady = privacyCheckbox.checked && termsCheckbox.checked;
+                submitBtn.disabled = !isReady;
+                submitBtn.style.opacity = isReady ? '1' : '0.6';
+                submitBtn.style.cursor = isReady ? 'pointer' : 'not-allowed';
+            }
+
+            privacyCheckbox.addEventListener('change', updateSubmitButtonState);
+            termsCheckbox.addEventListener('change', updateSubmitButtonState);
+            updateSubmitButtonState();
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const fields = {
+                    first_name: document.getElementById('first_name').value.trim(),
+                    last_name: document.getElementById('last_name').value.trim(),
+                    age: document.getElementById('age').value.trim(),
+                    email: document.getElementById('email').value.trim(),
+                    password: document.getElementById('password').value,
+                    confirm_password: document.getElementById('confirm_password').value,
+                    privacyConsent: privacyCheckbox.checked,
+                    termsConsent: termsCheckbox.checked
+                };
+
+                const emailError = document.getElementById('emailError');
+                const passwordError = document.getElementById('passwordError');
+                const confirmError = document.getElementById('confirmError');
+                const agreementError = document.getElementById('agreementError');
+
+                emailError.style.display = 'none';
+                passwordError.style.display = 'none';
+                confirmError.style.display = 'none';
+                agreementError.style.display = 'none';
+
+                let isValid = true;
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!fields.email || !emailRegex.test(fields.email)) {
+                    emailError.style.display = 'block';
+                    isValid = false;
+                }
+
+                if (!fields.password || fields.password.length < 8) {
+                    passwordError.style.display = 'block';
+                    isValid = false;
+                }
+
+                if (!fields.confirm_password || fields.password !== fields.confirm_password) {
+                    confirmError.style.display = 'block';
+                    isValid = false;
+                }
+
+                if (!fields.privacyConsent || !fields.termsConsent) {
+                    agreementError.style.display = 'block';
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            first_name: fields.first_name,
+                            last_name: fields.last_name,
+                            age: fields.age ? Number(fields.age) : 0,
+                            email: fields.email,
+                            password: fields.password,
+                            confirm_password: fields.confirm_password,
+                            privacyConsent: fields.privacyConsent,
+                            termsConsent: fields.termsConsent
+                        })
+                    });
+
+                    if (response.redirected) {
+                        window.location.assign(response.url);
+                        return;
+                    }
+
+                    const result = await response.json().catch((error) => {
+                        console.error('Сервер вернул некорректный ответ при регистрации:', error);
+                        throw new Error('Сервер вернул некорректный ответ. Попробуйте позже.');
+                    });
+
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || 'Ошибка при регистрации');
+                    }
+
+                    window.location.href = '/?registration=success';
+                } catch (error) {
+                    const details = error instanceof Error ? error.message : '';
+                    console.error(`Не удалось завершить регистрацию: ${details || 'неизвестная ошибка'}`, error);
+                    alert(details || 'Не удалось завершить регистрацию. Попробуйте ещё раз.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

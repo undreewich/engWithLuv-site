@@ -65,17 +65,22 @@
         <h1 class="login-title">Вход в админ панель</h1>
         <form id="loginForm">
             <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" autocomplete="username" required>
+            </div>
+            <div class="form-group">
                 <label for="password">Пароль:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
             </div>
             <button type="submit" class="login-btn">Войти</button>
         </form>
-        <div id="errorMessage" class="error-message">Неверный пароль</div>
+        <div id="errorMessage" class="error-message">Неверный email или пароль</div>
     </div>
 
     <script>
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const errorMessage = document.getElementById('errorMessage');
             const submitBtn = document.querySelector('.login-btn');
@@ -86,7 +91,7 @@
             errorMessage.style.display = 'none';
 
             try {
-                const result = await loginAdmin(password);
+                const result = await loginAdmin(email, password);
 
                 if (result.success) {
                     // Перенаправление на админ панель
@@ -97,7 +102,9 @@
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
-                errorMessage.textContent = 'Произошла ошибка. Попробуйте еще раз.';
+                const details = error instanceof Error ? error.message : '';
+                console.error(`Не удалось выполнить вход администратора: ${details || 'неизвестная ошибка'}`, error);
+                errorMessage.textContent = details || 'Не удалось выполнить вход. Попробуйте ещё раз.';
                 errorMessage.style.display = 'block';
             } finally {
                 // Восстанавливаем кнопку
@@ -107,14 +114,14 @@
         });
 
         // Функция для авторизации администратора
-        async function loginAdmin(password) {
+        async function loginAdmin(email, password) {
             try {
-                const response = await fetch('/api/login', {
+                const response = await fetch('/admin/login', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ password: password })
+                    body: JSON.stringify({ email: email, password: password })
                 });
 
                 const data = await response.json();
@@ -127,10 +134,14 @@
                     return { success: false, error: data.message || 'Ошибка сервера' };
                 }
             } catch (error) {
-                console.error('Ошибка при авторизации:', error);
+                const details = error instanceof Error ? error.message : '';
+                console.error(`Ошибка запроса авторизации: ${details || 'сетевая ошибка'}`, error);
                 return { success: false, error: 'Ошибка сети' };
             }
         }
     </script>
 </body>
 </html>
+
+
+

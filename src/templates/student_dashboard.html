@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f5ff">
+    <title>Личный кабинет — Engwithluv</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #29243b;
+            background: #f7f5ff;
+        }
+        * { box-sizing: border-box; }
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            padding: 28px 18px;
+            background:
+                radial-gradient(ellipse at 10% 12%, rgba(217, 207, 255, .7), transparent 35%),
+                radial-gradient(ellipse at 90% 88%, rgba(255, 220, 231, .75), transparent 32%),
+                #f7f5ff;
+        }
+        .page { width: min(100%, 900px); margin: 0 auto; }
+        .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+        .brand { display: inline-flex; align-items: center; gap: 10px; color: #5f4bb6; font-size: .9rem; font-weight: 750; letter-spacing: .04em; text-decoration: none; }
+        .brand-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 12px; background: linear-gradient(135deg, #8068db, #b08be8); color: white; font-size: 1.15rem; }
+        .home-link { color: #7058c5; font-weight: 650; text-decoration: none; }
+        .home-link:hover { text-decoration: underline; }
+        .card { padding: clamp(26px, 6vw, 48px); border: 1px solid rgba(255, 255, 255, .9); border-radius: 24px; background: rgba(255, 255, 255, .94); box-shadow: 0 24px 70px rgba(61, 43, 112, .13); }
+        .eyebrow { margin: 0 0 9px; color: #8068c5; font-size: .78rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+        h1 { margin: 0; font-size: clamp(1.8rem, 6vw, 2.4rem); letter-spacing: -.045em; }
+        .intro { margin: 12px 0 28px; color: #777187; line-height: 1.6; }
+        .placeholder { padding: 22px; border: 1px dashed #d9d0f0; border-radius: 16px; background: #faf9ff; }
+        .placeholder h2 { margin: 0 0 8px; font-size: 1.1rem; }
+        .placeholder p { margin: 0; color: #777187; line-height: 1.6; }
+        @media (max-width: 480px) { .topbar { align-items: flex-start; } }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <header class="topbar">
+            <a class="brand" href="/" aria-label="Engwithluv — на главную">
+                <span class="brand-mark" aria-hidden="true">♡</span>
+                <span>ENGWITHLUV</span>
+            </a>
+            <a class="home-link" href="/">На главную</a>
+        </header>
+
+        <section class="card" aria-labelledby="pageTitle">
+            <p class="eyebrow">Ваше пространство для учёбы</p>
+            <h1 id="pageTitle">Личный кабинет студента</h1>
+            <p class="intro">Добро пожаловать! Здесь будет собрана информация о ваших занятиях и обучении.</p>
+            <div class="placeholder">
+                <h2>Кабинет готовится</h2>
+                <p>В этом разделе появятся расписание уроков, прогресс обучения и информация о занятиях.</p>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

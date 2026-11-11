@@ -58,11 +58,18 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Handle submit button
     submitBtn.addEventListener('click', function() {
+        const privacyConsent = document.getElementById('privacyConsent').checked;
+        const termsConsent = document.getElementById('termsConsent').checked;
         const studentInfo = document.getElementById('studentInfo').value;
         const contactTelegram = document.getElementById('contactTelegram').value;
         const contactWhatsapp = document.getElementById('contactWhatsapp').value;
         const contactEmail = document.getElementById('contactEmail').value;
         const successModal = document.getElementById('successModal');
+
+        if (!privacyConsent || !termsConsent) {
+            alert('Необходимо принять Политику конфиденциальности и Пользовательское соглашение');
+            return;
+        }
         
         // Validate inputs
         if (selectedSlots.length === 0) {

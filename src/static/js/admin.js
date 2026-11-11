@@ -1,6 +1,13 @@
 // Базовый URL для API
 const API_BASE_URL = '/api';
 
+function getErrorMessage(error, fallback = 'Неизвестная ошибка') {
+    if (error instanceof Error && error.message) {
+        return error.message;
+    }
+    return typeof error === 'string' && error.trim() ? error : fallback;
+}
+
 // Функция-обертка для fetch с проверкой 401 ошибки
 async function secureFetch(url, options = {}) {
     try {
@@ -12,10 +19,9 @@ async function secureFetch(url, options = {}) {
             window.location.href = '/admin/login';
             return null;
         }
-        
         return response;
     } catch (error) {
-        console.error('Ошибка при выполнении запроса:', error);
+        console.error(`Ошибка выполнения запроса ${url}: ${getErrorMessage(error, 'сетевая ошибка')}`, error);
         throw error;
     }
 }
@@ -53,7 +59,7 @@ async function fetchStudents(limit = studentPageLimit, offset = 0) {
         }
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при получении данных студентов:', error);
+        console.error(`Не удалось загрузить список учеников: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -67,7 +73,7 @@ async function fetchSchedule() {
         }
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при получении данных расписания:', error);
+        console.error(`Не удалось загрузить расписание: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -81,7 +87,7 @@ async function fetchLessonsHeap() {
         }
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при получении данных кучи уроков:', error);
+        console.error(`Не удалось загрузить оставшиеся уроки: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -95,7 +101,7 @@ async function fetchLessonsHistory() {
         }
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при получении данных истории уроков:', error);
+        console.error(`Не удалось загрузить историю уроков: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -109,31 +115,32 @@ async function fetchPayments(limit = paymentPageLimit, offset = 0) {
         }
         return await response.json();
     } catch (error) {
-        console.error('Ошибка при получении данных платежей:', error);
+        console.error(`Не удалось загрузить платежи: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
 
 // Функция для авторизации администратора
-async function loginAdmin(password) {
+async function loginAdmin(email, password) {
     try {
-        const response = await fetch(`${API_BASE_URL}/login`, {
+        const response = await fetch('/admin/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ password: password })
+            body: JSON.stringify({ email: email, password: password })
         });
 
+        const data = await response.json();
         if (response.status === 200) {
             return { success: true };
         } else if (response.status === 401) {
-            return { success: false, error: 'Неверный пароль' };
+            return { success: false, error: data.message || 'Неверный email или пароль' };
         } else {
-            return { success: false, error: 'Ошибка сервера' };
+            return { success: false, error: data.message || 'Ошибка сервера' };
         }
     } catch (error) {
-        console.error('Ошибка при авторизации:', error);
+        console.error(`Ошибка авторизации администратора: ${getErrorMessage(error, 'сетевая ошибка')}`, error);
         return { success: false, error: 'Ошибка сети' };
     }
 }
@@ -359,8 +366,9 @@ function saveStudentChanges() {
             alert('Ошибка при сохранении изменений.');
         }
     }).catch(error => {
-        console.error('Ошибка при сохранении:', error);
-        alert('Ошибка при сохранении изменений.');
+        const message = getErrorMessage(error, 'Неизвестная ошибка');
+        console.error(`Не удалось сохранить изменения ученика: ${message}`, error);
+        alert(`Не удалось сохранить изменения. ${message}`);
     });
 }
 
@@ -371,15 +379,22 @@ async function copyToClipboard(elementId) {
         await navigator.clipboard.writeText(text);
         alert('Ссылка скопирована в буфер обмена!');
     } catch (err) {
-        console.error('Ошибка копирования:', err);
-        // Fallback для старых браузеров
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Ссылка скопирована в буфер обмена!');
+        console.warn(`Современное копирование недоступно: ${getErrorMessage(err)}`, err);
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            const copied = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            if (!copied) {
+                throw new Error('Браузер не подтвердил копирование.');
+            }
+            alert('Ссылка скопирована в буфер обмена!');
+        } catch (fallbackError) {
+            console.error(`Не удалось скопировать ссылку: ${getErrorMessage(fallbackError)}`, fallbackError);
+            alert('Не удалось скопировать ссылку. Скопируйте её вручную.');
+        }
     }
 }
 
@@ -388,14 +403,22 @@ async function copyTextToClipboard(text) {
         await navigator.clipboard.writeText(text);
         alert('Ссылка скопирована в буфер обмена!');
     } catch (err) {
-        console.error('Ошибка копирования:', err);
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Ссылка скопирована в буфер обмена!');
+        console.warn(`Современное копирование недоступно: ${getErrorMessage(err)}`, err);
+        try {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            const copied = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            if (!copied) {
+                throw new Error('Браузер не подтвердил копирование.');
+            }
+            alert('Ссылка скопирована в буфер обмена!');
+        } catch (fallbackError) {
+            console.error(`Не удалось скопировать ссылку: ${getErrorMessage(fallbackError)}`, fallbackError);
+            alert('Не удалось скопировать ссылку. Скопируйте её вручную.');
+        }
     }
 }
 
@@ -465,21 +488,27 @@ function createPaymentLink() {
         },
         body: JSON.stringify({"studentId": studentId, "amount": amount})
     }).then(response => {
-        if (response && response.ok) {
-            return response.json();
-        } else {
-            console.error('Ошибка при при создании ссылки:', error);
-             alert('Ошибка при при создании ссылки.');
+        if (!response) {
+            throw new Error('Сессия истекла. Войдите в систему заново.');
         }
+        return response.json().then(data => {
+            if (!response.ok) {
+                throw new Error(data.message || `Сервер вернул ошибку ${response.status}.`);
+            }
+            return data;
+        });
     })
     .then(data => {
-        console.log("data:", data);
-        document.getElementById('paymentLinkUrl').textContent = data["link"];
+        if (!data || !data.link) {
+            throw new Error('Сервер не вернул ссылку на оплату.');
+        }
+        document.getElementById('paymentLinkUrl').textContent = data.link;
         document.getElementById('paymentLinkResult').style.display = 'block'; 
     })
     .catch(error => {
-        console.error('Ошибка при при создании ссылки:', error);
-        alert('Ошибка при при создании ссылки.');
+        const message = getErrorMessage(error, 'Неизвестная ошибка');
+        console.error(`Не удалось создать ссылку на оплату: ${message}`, error);
+        alert(`Не удалось создать ссылку на оплату. ${message}`);
     });
 }
 
@@ -535,7 +564,8 @@ function addStudent() {
         });
     })
     .catch(error => {
-        console.error('Ошибка при добавлении ученика:', error);
-        alert(error.message || 'Ошибка при добавлении ученика.');
+        const message = getErrorMessage(error, 'Неизвестная ошибка');
+        console.error(`Не удалось добавить ученика: ${message}`, error);
+        alert(`Не удалось добавить ученика. ${message}`);
     });
 }

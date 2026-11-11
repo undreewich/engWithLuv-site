@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f5ff">
+    <title>Вход — Engwithluv</title>
+    <style>
+        :root {
+            color-scheme: light;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #29243b;
+            background: #f7f5ff;
+            font-synthesis: none;
+            text-rendering: optimizeLegibility;
+        }
+        * { box-sizing: border-box; }
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            display: grid;
+            place-items: center;
+            padding: 28px 18px;
+            background:
+                radial-gradient(ellipse at 10% 12%, rgba(217, 207, 255, .7), transparent 35%),
+                radial-gradient(ellipse at 90% 88%, rgba(255, 220, 231, .75), transparent 32%),
+                #f7f5ff;
+        }
+        .login-card {
+            width: min(100%, 440px);
+            padding: clamp(28px, 7vw, 48px);
+            border: 1px solid rgba(255, 255, 255, .9);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, .94);
+            box-shadow: 0 24px 70px rgba(61, 43, 112, .13);
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 34px;
+            color: #5f4bb6;
+            font-size: .9rem;
+            font-weight: 750;
+            letter-spacing: .04em;
+            text-decoration: none;
+        }
+        .brand-mark {
+            display: grid;
+            width: 36px;
+            height: 36px;
+            place-items: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #8068db, #b08be8);
+            color: white;
+            font-size: 1.15rem;
+        }
+        .eyebrow {
+            margin: 0 0 9px;
+            color: #8068c5;
+            font-size: .78rem;
+            font-weight: 750;
+            letter-spacing: .12em;
+            text-transform: uppercase;
+        }
+        h1 {
+            margin: 0;
+            color: #29243b;
+            font-size: clamp(1.8rem, 6vw, 2.25rem);
+            letter-spacing: -.045em;
+        }
+        .intro {
+            margin: 11px 0 28px;
+            color: #777187;
+            line-height: 1.6;
+        }
+        .form-group { margin-bottom: 19px; }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #403a50;
+            font-size: .9rem;
+            font-weight: 650;
+        }
+        input {
+            width: 100%;
+            min-height: 50px;
+            padding: 12px 14px;
+            border: 1px solid #e4e0ee;
+            border-radius: 12px;
+            outline: none;
+            background: #fff;
+            color: #29243b;
+            font: inherit;
+            transition: border-color .18s ease, box-shadow .18s ease;
+        }
+        input::placeholder { color: #aaa5b5; }
+        input:focus {
+            border-color: #9079db;
+            box-shadow: 0 0 0 4px rgba(144, 121, 219, .14);
+        }
+        .submit-button {
+            width: 100%;
+            min-height: 52px;
+            margin-top: 7px;
+            border: 0;
+            border-radius: 13px;
+            background: linear-gradient(110deg, #7058c5, #9475df);
+            box-shadow: 0 9px 20px rgba(112, 88, 197, .22);
+            color: #fff;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+        }
+        .submit-button:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 12px 24px rgba(112, 88, 197, .3);
+        }
+        .submit-button:disabled { cursor: wait; opacity: .7; }
+        .message {
+            display: none;
+            margin: 18px 0 0;
+            padding: 12px 14px;
+            border-radius: 10px;
+            font-size: .9rem;
+            line-height: 1.45;
+        }
+        .message.error { display: block; background: #fff0f1; color: #a93245; }
+        .message.success { display: block; background: #eef9f1; color: #277342; }
+        .flash-message {
+            margin: 0 0 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            background: #f2efff;
+            color: #57489c;
+            font-size: .9rem;
+            line-height: 1.45;
+        }
+        .flash-message.danger { background: #fff0f1; color: #a93245; }
+        .flash-message.success { background: #eef9f1; color: #277342; }
+        .footer {
+            margin: 25px 0 0;
+            color: #777187;
+            font-size: .92rem;
+            text-align: center;
+        }
+        .footer a, .back-link { color: #7058c5; font-weight: 650; text-decoration: none; }
+        .footer a:hover, .back-link:hover { text-decoration: underline; }
+        .back-link {
+            display: block;
+            margin-top: 24px;
+            color: #8b8598;
+            font-size: .88rem;
+            font-weight: 500;
+            text-align: center;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <main class="login-card">
+        <a class="brand" href="{{ url_for('main.index') }}" aria-label="Engwithluv — на главную">
+            <span class="brand-mark" aria-hidden="true">♡</span>
+            <span>ENGWITHLUV</span>
+        </a>
+
+        <p class="eyebrow">Рады видеть вас снова</p>
+        <h1>Войти в аккаунт</h1>
+        <p class="intro">Введите данные, указанные при регистрации.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="flash-message {{ category }}" role="status">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+
+        <form id="loginForm" action="{{ url_for('main.login') }}" method="post">
+            <div class="form-group">
+                <label for="email">Электронная почта</label>
+                <input type="email" id="email" name="email" autocomplete="email" placeholder="name@example.com" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" placeholder="Введите пароль" required>
+            </div>
+            <button class="submit-button" type="submit">Войти</button>
+            <p id="formMessage" class="message" role="alert" aria-live="polite"></p>
+        </form>
+
+        <p class="footer">Ещё нет аккаунта? <a href="{{ url_for('main.register') }}">Зарегистрироваться</a></p>
+        <a class="back-link" href="{{ url_for('main.index') }}">← Вернуться на главную</a>
+    </main>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const formMessage = document.getElementById('formMessage');
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            formMessage.className = 'message';
+            formMessage.textContent = '';
+            submitButton.disabled = true;
+            submitButton.textContent = 'Входим…';
+
+            try {
+                const response = await fetch(loginForm.action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(Object.fromEntries(new FormData(loginForm)))
+                });
+                const result = await response.json();
+
+                if (!response.ok || result.status !== 'success') {
+                    throw new Error(result.message || 'Не удалось войти. Проверьте данные и попробуйте ещё раз.');
+                }
+
+                formMessage.textContent = result.message || 'Вход выполнен.';
+                formMessage.className = 'message success';
+                window.location.assign("{{ url_for('usr.student_dashboard') }}");
+            } catch (error) {
+                const details = error instanceof Error ? error.message : '';
+                console.error(`Не удалось выполнить вход: ${details || 'ошибка связи с сервером'}`, error);
+                formMessage.textContent = details || 'Не удалось связаться с сервером. Попробуйте ещё раз.';
+                formMessage.className = 'message error';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Войти';
+            }
+        });
+    </script>
+</body>
+</html>

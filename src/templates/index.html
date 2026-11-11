@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Репетитор английского языка</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
@@ -29,10 +29,88 @@
         .checkbox-label a:hover {
             text-decoration: underline;
         }
+        .auth-actions {
+            display: flex;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .auth-actions a,
+        .auth-actions button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 9px 16px;
+            border: 1px solid #667eea;
+            border-radius: 7px;
+            background: white;
+            color: #5a67d8;
+            font: inherit;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .auth-actions a:hover,
+        .auth-actions button:hover {
+            background: #f0f4ff;
+        }
+        .auth-actions .register-link {
+            background: #667eea;
+            color: white;
+        }
+        .auth-actions .register-link:hover {
+            background: #5a67d8;
+        }
+        .auth-actions .account-link {
+            background: #f0edff;
+        }
+        .flash-messages {
+            margin-bottom: 16px;
+        }
+        .flash-message {
+            margin-bottom: 10px;
+            padding: 12px 14px;
+            border-radius: 8px;
+            background: #f2efff;
+            color: #57489c;
+            line-height: 1.45;
+        }
+        .flash-message.danger { background: #fff0f1; color: #a93245; }
+        .flash-message.success { background: #eef9f1; color: #277342; }
+        @media (max-width: 480px) {
+            .auth-actions {
+                gap: 6px;
+            }
+            .auth-actions a,
+            .auth-actions button {
+                padding: 8px 10px;
+                font-size: 0.9em;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}" role="status">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <nav class="auth-actions" aria-label="Действия аккаунта">
+            <a class="register-link" href="{{ url_for('main.register') }}">Регистрация</a>
+            <a href="{{ url_for('main.login') }}">Войти</a>
+            <a class="account-link" href="{{ url_for('usr.student_dashboard') }}">Личный кабинет</a>
+            <button type="button" onclick="alert('Выход пока недоступен')">Выйти</button>
+        </nav>
+
         <!-- Header Section -->
         <header class="header">
             <h1 class="title">Luv welcoms You!</h1>
@@ -132,11 +210,15 @@
                 <input type="email" id="contactEmail" class="contact-input" placeholder="example@mail.com" />
             </div>
 
-            <!-- Privacy Policy Checkbox -->
+            <!-- Required agreements -->
             <div class="form-group">
                 <label class="checkbox-label">
                     <input type="checkbox" id="privacyConsent" required>
-                    Я согласен с <a href="/privacy" target="_blank">Политикой конфиденциальности</a>
+                    Я согласен с <a href="/privacy" target="_blank" rel="noopener noreferrer">Политикой конфиденциальности</a>
+                </label>
+                <label class="checkbox-label">
+                    <input type="checkbox" id="termsConsent" required>
+                    Я согласен с <a href="/terms" target="_blank" rel="noopener noreferrer">Пользовательским соглашением</a>
                 </label>
             </div>
 
@@ -171,14 +253,32 @@
         </div>
     </div>
 
+    <div id="registrationSuccessModal" class="success-modal hidden">
+        <div class="success-modal-content">
+            <button class="modal-close-btn" onclick="document.getElementById('registrationSuccessModal').classList.add('hidden')">×</button>
+            <div class="success-icon-large">✓</div>
+            <h2>Успешная регистрация</h2>
+            <p>Вы успешно зарегистрированы в системе.</p>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='js/schedule.js') }}"></script>
     <script>
         // Character counter for student info textarea
         document.addEventListener('DOMContentLoaded', function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('registration') === 'success') {
+                const registrationModal = document.getElementById('registrationSuccessModal');
+                if (registrationModal) {
+                    registrationModal.classList.remove('hidden');
+                }
+            }
+
             const textarea = document.getElementById('studentInfo');
             const charCount = document.getElementById('charCount');
             const submitBtn = document.getElementById('submitBtn');
             const privacyCheckbox = document.getElementById('privacyConsent');
+            const termsCheckbox = document.getElementById('termsConsent');
             
             function updateCharCount() {
                 const currentLength = textarea.value.length;
@@ -195,12 +295,15 @@
             }
             
             function updateSubmitButton() {
-                submitBtn.disabled = !privacyCheckbox.checked;
-                submitBtn.style.opacity = privacyCheckbox.checked ? '1' : '0.5';
+                const isReady = privacyCheckbox.checked && termsCheckbox.checked;
+                submitBtn.disabled = !isReady;
+                submitBtn.style.opacity = isReady ? '1' : '0.5';
+                submitBtn.style.cursor = isReady ? 'pointer' : 'not-allowed';
             }
             
             textarea.addEventListener('input', updateCharCount);
             privacyCheckbox.addEventListener('change', updateSubmitButton);
+            termsCheckbox.addEventListener('change', updateSubmitButton);
             
             updateCharCount(); // Initial count
             updateSubmitButton(); // Initial button state
