@@ -63,6 +63,11 @@
 <body>
     <div class="login-container">
         <h1 class="login-title">Вход в админ панель</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="error-message" style="display:block" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
         <form id="loginForm">
             <div class="form-group">
                 <label for="email">Email:</label>
@@ -103,8 +108,7 @@
                 }
             } catch (error) {
                 const details = error instanceof Error ? error.message : '';
-                console.error(`Не удалось выполнить вход администратора: ${details || 'неизвестная ошибка'}`, error);
-                errorMessage.textContent = details || 'Не удалось выполнить вход. Попробуйте ещё раз.';
+                errorMessage.textContent = 'Не удалось выполнить вход. Попробуйте ещё раз.';
                 errorMessage.style.display = 'block';
             } finally {
                 // Восстанавливаем кнопку
@@ -133,9 +137,7 @@
                 } else {
                     return { success: false, error: data.message || 'Ошибка сервера' };
                 }
-            } catch (error) {
-                const details = error instanceof Error ? error.message : '';
-                console.error(`Ошибка запроса авторизации: ${details || 'сетевая ошибка'}`, error);
+            } catch (_error) {
                 return { success: false, error: 'Ошибка сети' };
             }
         }

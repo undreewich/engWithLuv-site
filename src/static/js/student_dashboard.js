@@ -15,19 +15,45 @@ async function loadDashboardSection(section) {
     const itemsList = section.querySelector('[data-items]');
 
     try {
-        const response = await fetch(section.dataset.endpoint, {
+        const options = {
             method: 'GET',
             credentials: 'include',
             headers: { Accept: 'application/json' }
-        });
+        };
+        let response = await fetch(section.dataset.endpoint, options);
+
+        if (response.status === 401) {
+            const refreshResponse = await fetch('/refresh', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { Accept: 'application/json' }
+            });
+            if (!refreshResponse.ok) {
+                window.location.replace('/login');
+                return;
+            }
+            response = await fetch(section.dataset.endpoint, options);
+        }
+
+        if (response.status === 401) {
+            window.location.replace('/login');
+            return;
+        }
+
+        if (response.status === 403) {
+            window.location.replace('/');
+            return;
+        }
 
         if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
+            emptyState.textContent = 'Не удалось загрузить данные. Попробуйте позже.';
+            return;
         }
 
         const items = await response.json();
         if (!Array.isArray(items)) {
-            throw new Error('Ожидался список данных');
+            emptyState.textContent = 'Не удалось загрузить данные. Попробуйте позже.';
+            return;
         }
 
         if (items.length === 0) {
@@ -42,8 +68,7 @@ async function loadDashboardSection(section) {
         }));
         itemsList.hidden = false;
         emptyState.hidden = true;
-    } catch (error) {
-        console.error('Не удалось загрузить данные раздела кабинета:', error);
+    } catch (_error) {
         emptyState.textContent = 'Не удалось загрузить данные. Попробуйте обновить страницу.';
     }
 }

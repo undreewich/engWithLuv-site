@@ -1,5 +1,23 @@
 // Базовый URL для API
-const API_BASE_URL = '/api';
+const API_BASE_URL = '/admin';
+
+function showNotice(message, isError = false) {
+    let notice = document.getElementById('appNotice');
+    if (!notice) {
+        notice = document.createElement('div');
+        notice.id = 'appNotice';
+        notice.setAttribute('role', 'status');
+        notice.style.cssText = 'position:fixed;right:20px;bottom:20px;z-index:10000;max-width:min(420px,calc(100vw - 40px));padding:14px 18px;border-radius:10px;background:#eef9f1;color:#277342;box-shadow:0 8px 28px rgba(0,0,0,.18);font:500 14px/1.45 sans-serif;';
+        document.body.appendChild(notice);
+    }
+    notice.setAttribute('role', isError ? 'alert' : 'status');
+    notice.style.background = isError ? '#fff0f1' : '#eef9f1';
+    notice.style.color = isError ? '#a93245' : '#277342';
+    notice.textContent = message;
+    notice.hidden = false;
+    clearTimeout(notice.dismissTimer);
+    notice.dismissTimer = setTimeout(() => { notice.hidden = true; }, 5000);
+}
 
 function getErrorMessage(error, fallback = 'Неизвестная ошибка') {
     if (error instanceof Error && error.message) {
@@ -11,18 +29,38 @@ function getErrorMessage(error, fallback = 'Неизвестная ошибка'
 // Функция-обертка для fetch с проверкой 401 ошибки
 async function secureFetch(url, options = {}) {
     try {
-        const response = await fetch(url, options);
-        
-        // Если получен статус 401, перенаправляем на страницу входа
+        const requestOptions = {
+            ...options,
+            credentials: 'include',
+            headers: { ...options.headers, Accept: 'application/json' }
+        };
+        let response = await fetch(url, requestOptions);
+
         if (response.status === 401) {
-            console.warn('Сессия истекла или доступ запрещен (401). Перенаправление на страницу входа...');
-            window.location.href = '/admin/login';
+            const refreshResponse = await fetch('/refresh', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { Accept: 'application/json' }
+            });
+            if (!refreshResponse.ok) {
+                window.location.replace('/admin/login');
+                return null;
+            }
+            response = await fetch(url, requestOptions);
+        }
+
+        if (response.status === 401) {
+            window.location.replace('/admin/login');
+            return null;
+        }
+
+        if (response.status === 403) {
+            window.location.replace('/');
             return null;
         }
         return response;
-    } catch (error) {
-        console.error(`Ошибка выполнения запроса ${url}: ${getErrorMessage(error, 'сетевая ошибка')}`, error);
-        throw error;
+    } catch (_error) {
+        return null;
     }
 }
 
@@ -59,7 +97,6 @@ async function fetchStudents(limit = studentPageLimit, offset = 0) {
         }
         return await response.json();
     } catch (error) {
-        console.error(`Не удалось загрузить список учеников: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -73,7 +110,6 @@ async function fetchSchedule() {
         }
         return await response.json();
     } catch (error) {
-        console.error(`Не удалось загрузить расписание: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -87,7 +123,6 @@ async function fetchLessonsHeap() {
         }
         return await response.json();
     } catch (error) {
-        console.error(`Не удалось загрузить оставшиеся уроки: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -101,7 +136,6 @@ async function fetchLessonsHistory() {
         }
         return await response.json();
     } catch (error) {
-        console.error(`Не удалось загрузить историю уроков: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -115,7 +149,6 @@ async function fetchPayments(limit = paymentPageLimit, offset = 0) {
         }
         return await response.json();
     } catch (error) {
-        console.error(`Не удалось загрузить платежи: ${getErrorMessage(error)}`, error);
         return [];
     }
 }
@@ -139,8 +172,7 @@ async function loginAdmin(email, password) {
         } else {
             return { success: false, error: data.message || 'Ошибка сервера' };
         }
-    } catch (error) {
-        console.error(`Ошибка авторизации администратора: ${getErrorMessage(error, 'сетевая ошибка')}`, error);
+    } catch (_error) {
         return { success: false, error: 'Ошибка сети' };
     }
 }
@@ -291,7 +323,6 @@ function renderTable(tableId, data, columns, append = false) {
 
 // Функции для модального окна редактирования студента
 function openEditModal(student) {
-    console.log('Открытие модала для студента:', student);
     document.getElementById('editStudentId').value = student.id;
     document.getElementById('editStudentName').value = student.name;
     document.getElementById('editStudentSurname').value = student.surname;
@@ -347,8 +378,6 @@ function saveStudentChanges() {
         age: parseInt(document.getElementById('editStudentAge').value)
     };
     
-    console.log('Отправка изменений студента на сервер:', studentData);
-    
     // Имитация отправки на сервер
     secureFetch(`${API_BASE_URL}/admin/students/${studentData.id}`, {
         method: 'PUT',
@@ -358,17 +387,16 @@ function saveStudentChanges() {
         body: JSON.stringify(studentData)
     }).then(response => {
         if (response && response.ok) {
-            alert('Изменения сохранены успешно!');
+            showNotice('Изменения сохранены успешно.');
             closeModal();
             // Перезагрузить таблицу студентов
             loadStudentsTable();
         } else {
-            alert('Ошибка при сохранении изменений.');
+            showNotice('Не удалось сохранить изменения. Попробуйте позже.', true);
         }
     }).catch(error => {
         const message = getErrorMessage(error, 'Неизвестная ошибка');
-        console.error(`Не удалось сохранить изменения ученика: ${message}`, error);
-        alert(`Не удалось сохранить изменения. ${message}`);
+        showNotice('Не удалось сохранить изменения. Попробуйте позже.', true);
     });
 }
 
@@ -377,9 +405,8 @@ async function copyToClipboard(elementId) {
     const text = document.getElementById(elementId).textContent;
     try {
         await navigator.clipboard.writeText(text);
-        alert('Ссылка скопирована в буфер обмена!');
+        showNotice('Ссылка скопирована в буфер обмена.');
     } catch (err) {
-        console.warn(`Современное копирование недоступно: ${getErrorMessage(err)}`, err);
         try {
             const textArea = document.createElement('textarea');
             textArea.value = text;
@@ -390,10 +417,9 @@ async function copyToClipboard(elementId) {
             if (!copied) {
                 throw new Error('Браузер не подтвердил копирование.');
             }
-            alert('Ссылка скопирована в буфер обмена!');
+            showNotice('Ссылка скопирована в буфер обмена.');
         } catch (fallbackError) {
-            console.error(`Не удалось скопировать ссылку: ${getErrorMessage(fallbackError)}`, fallbackError);
-            alert('Не удалось скопировать ссылку. Скопируйте её вручную.');
+            showNotice('Не удалось скопировать ссылку. Скопируйте её вручную.', true);
         }
     }
 }
@@ -401,9 +427,8 @@ async function copyToClipboard(elementId) {
 async function copyTextToClipboard(text) {
     try {
         await navigator.clipboard.writeText(text);
-        alert('Ссылка скопирована в буфер обмена!');
+        showNotice('Ссылка скопирована в буфер обмена.');
     } catch (err) {
-        console.warn(`Современное копирование недоступно: ${getErrorMessage(err)}`, err);
         try {
             const textArea = document.createElement('textarea');
             textArea.value = text;
@@ -414,10 +439,9 @@ async function copyTextToClipboard(text) {
             if (!copied) {
                 throw new Error('Браузер не подтвердил копирование.');
             }
-            alert('Ссылка скопирована в буфер обмена!');
+            showNotice('Ссылка скопирована в буфер обмена.');
         } catch (fallbackError) {
-            console.error(`Не удалось скопировать ссылку: ${getErrorMessage(fallbackError)}`, fallbackError);
-            alert('Не удалось скопировать ссылку. Скопируйте её вручную.');
+            showNotice('Не удалось скопировать ссылку. Скопируйте её вручную.', true);
         }
     }
 }
@@ -427,8 +451,6 @@ async function loadMoreStudents() {
     if (!hasMoreStudents) {
         return;
     }
-
-    console.log('Загрузка дополнительных студентов...', { offset: studentLoadOffset, limit: studentPageLimit });
 
     const data = await fetchStudents(studentPageLimit, studentLoadOffset);
     if (!data.length) {
@@ -442,26 +464,21 @@ async function loadMoreStudents() {
 }
 
 function loadMoreSchedule() {
-    console.log('Загрузка дополнительного расписания...');
-    alert('Заглушка: Загрузка дополнительного расписания (не реализовано)');
+    showNotice('Загрузка расписания пока недоступна.', true);
 }
 
 function loadMoreLessonsHeap() {
-    console.log('Загрузка дополнительных оставшихся уроков...');
-    alert('Заглушка: Загрузка дополнительных оставшихся уроков (не реализовано)');
+    showNotice('Загрузка оставшихся уроков пока недоступна.', true);
 }
 
 function loadMoreLessonsHistory() {
-    console.log('Загрузка дополнительной истории уроков...');
-    alert('Заглушка: Загрузка дополнительной истории уроков (не реализовано)');
+    showNotice('Загрузка истории уроков пока недоступна.', true);
 }
 
 async function loadMorePayments() {
     if (!hasMorePayments) {
         return;
     }
-
-    console.log('Загрузка дополнительных платежей...', { offset: paymentLoadOffset, limit: paymentPageLimit });
 
     const data = await fetchPayments(paymentPageLimit, paymentLoadOffset);
     if (!data.length) {
@@ -478,9 +495,6 @@ async function loadMorePayments() {
 function createPaymentLink() {
     const studentId = document.getElementById('paymentLinkStudent').value;
     const amount = document.getElementById('paymentLinkAmount').value;
-    console.log('Создание ссылки для оплаты:', { studentId, amount });
-    
-
     secureFetch(`${API_BASE_URL}/new-invoice`, {
         method: 'POST',
         headers: {
@@ -507,8 +521,7 @@ function createPaymentLink() {
     })
     .catch(error => {
         const message = getErrorMessage(error, 'Неизвестная ошибка');
-        console.error(`Не удалось создать ссылку на оплату: ${message}`, error);
-        alert(`Не удалось создать ссылку на оплату. ${message}`);
+        showNotice('Не удалось создать ссылку на оплату. Попробуйте позже.', true);
     });
 }
 
@@ -517,16 +530,14 @@ function addLessons() {
     const studentId = document.getElementById('addLessonsStudent').value;
     const price = document.getElementById('addLessonsPrice').value;
     const count = document.getElementById('addLessonsCount').value;
-    console.log('Добавление уроков:', { studentId, price, count });
-    alert('Заглушка: Уроки добавлены (не реализовано)');
+    showNotice('Добавление уроков пока недоступно.', true);
 }
 
 function addPayment() {
     const studentId = document.getElementById('addPaymentStudent').value;
     const amount = document.getElementById('addPaymentAmount').value;
     const date = document.getElementById('addPaymentDate').value;
-    console.log('Добавление оплаты:', { studentId, amount, date });
-    alert('Заглушка: Оплата добавлена (не реализовано)');
+    showNotice('Добавление оплаты пока недоступно.', true);
 }
 
 function addStudent() {
@@ -535,10 +546,8 @@ function addStudent() {
     const email = document.getElementById('addStudentEmail').value.trim();
     const age = parseInt(document.getElementById('addStudentAge').value, 10);
 
-    console.log('Добавление ученика:', { name, surname, email, age });
-
     if (!name || !surname || !email || Number.isNaN(age)) {
-        alert('Заполните имя, фамилию, email и возраст.');
+        showNotice('Заполните имя, фамилию, email и возраст.', true);
         return;
     }
 
@@ -552,7 +561,7 @@ function addStudent() {
     .then(response => {
         if (!response) { return; }
         if (response.ok) {
-            alert('Ученик успешно добавлен!');
+            showNotice('Ученик успешно добавлен.');
             document.getElementById('addStudentName').value = '';
             document.getElementById('addStudentSurname').value = '';
             document.getElementById('addStudentEmail').value = '';
@@ -565,7 +574,6 @@ function addStudent() {
     })
     .catch(error => {
         const message = getErrorMessage(error, 'Неизвестная ошибка');
-        console.error(`Не удалось добавить ученика: ${message}`, error);
-        alert(`Не удалось добавить ученика. ${message}`);
+        showNotice('Не удалось добавить ученика. Проверьте данные и попробуйте снова.', true);
     });
 }

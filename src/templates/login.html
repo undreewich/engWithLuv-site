@@ -224,7 +224,6 @@
                 window.location.assign("{{ url_for('usr.student_dashboard') }}");
             } catch (error) {
                 const details = error instanceof Error ? error.message : '';
-                console.error(`Не удалось выполнить вход: ${details || 'ошибка связи с сервером'}`, error);
                 formMessage.textContent = details || 'Не удалось связаться с сервером. Попробуйте ещё раз.';
                 formMessage.className = 'message error';
             } finally {

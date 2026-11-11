@@ -1,4 +1,5 @@
-from flask import Flask
+from flask import Flask, jsonify, redirect, request
+from werkzeug.exceptions import HTTPException
 
 
 from src.app.accessManager import permissionCheckAdmin, permissionCheckStudent
@@ -13,6 +14,31 @@ from src.app.bps.admin_bp import admin_bp
 
 
 app = Flask(__name__, template_folder='src/templates', static_folder='src/static')
+
+
+def wants_json_response():
+	accepts = request.headers.get('Accept', '')
+	return (
+		request.is_json
+		or 'application/json' in accepts
+		or request.path.startswith(('/api/', '/student/api/', '/admin/admin/'))
+	)
+
+
+@app.errorhandler(HTTPException)
+def handle_http_error(error):
+	if wants_json_response():
+		return jsonify({'status': 'error', 'message': 'Запрос не может быть выполнен.'}), error.code
+	if request.path.startswith('/static/'):
+		return 'Not found', error.code
+	return redirect('/')
+
+
+@app.errorhandler(500)
+def handle_server_error(_error):
+	if wants_json_response():
+		return jsonify({'status': 'error', 'message': 'Временная ошибка сервера.'}), 500
+	return redirect('/')
 
 
 app.config['MAIL_SERVER'] = config.MAIL_SERVER

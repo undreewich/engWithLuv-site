@@ -18,6 +18,9 @@ def admin_login():
     try:
         payload = request.get_json(silent=True) or request.form.to_dict()
         if not (user_id := ACM.manageVerifyAdminOnLogin(payload=payload)):
+            if not request.is_json:
+                flash('Неверный email или пароль.', 'danger')
+                return redirect(url_for('admin.admin_login'))
             return jsonify({'status': 'error', 'code': 401, "error": "no_such_user", "message": "need to contact administration"}), 401
 
         access_token, refresh_token = ACM.manageRotaionJWT(user_id, is_admin=True)
@@ -210,7 +213,7 @@ def get_payments():
 
 @admin_bp.route("/new-invoice", methods=['POST'])
 def new_invoice(): # DOUBlE CHECK REQUEST
-    return jsonify({'status': 'error', 'message': 'server error'}), 500 #Debugging line
+    return jsonify({'status': 'error', 'message': 'Создание ссылок временно недоступно.'}), 501
     # baseURL = "https://api.trybit.com/v2/invoice/create"
     # cryptocloudAPIKey = config.CRYPTOCLOUD_APIKEY
     # request_data = request.get_json(silent=True) or {}
@@ -237,7 +240,6 @@ def new_invoice(): # DOUBlE CHECK REQUEST
     # data = response.json()
     # formatted_json = json.dumps(data, indent=4, ensure_ascii=False)
     # if response.status_code == 200:
-    #     print("Success:", formatted_json)
     #     result = data.get("result", {})
     #     try:
     #         student_id = int(student_id) if student_id is not None else None
@@ -284,6 +286,5 @@ def new_invoice(): # DOUBlE CHECK REQUEST
     #         )
     #         conn.commit()
     # else:
-    #     print("Fail:", response.status_code, response.text)
 
     # return jsonify({ "link": data["result"]["link"]})

@@ -22,25 +22,38 @@ def permissionCheckStudent():
 
 def permissionCheck(access_type='student_access'):
     token = request.cookies.get('access_token')
-    
+
+    is_admin = access_type == 'admin_access'
+    login_endpoint = 'admin.admin_login' if is_admin else 'main.login'
+
+    def authorization_error(status, error, message):
+        accepts = request.headers.get('Accept', '')
+        is_json_request = (
+            request.is_json
+            or 'application/json' in accepts
+            or request.path.startswith(('/api/', '/student/api/', '/admin/admin/'))
+        )
+        if not is_json_request:
+            return redirect(url_for(login_endpoint))
+        return jsonify({'status': 'error', 'code': status, 'error': error, 'message': message}), status
+
     if not token:
-        return jsonify({'status': 'error', 'code': 401, "error": "authorization_required", "message": "Missing access token"}), 401
+        return authorization_error(401, 'authorization_required', 'Authentication required')
     
     try:
         payload = decode_jwt(token)
     except Exception:
         current_app.logger.exception("Ошибка проверки JWT в permissionCheck")
-        return jsonify({'status': 'error', 'code': 401, "error": "authorization_required", "message": "Access token is not valid"}), 401
+        return authorization_error(401, 'authorization_required', 'Authentication required')
 
     if not payload:
-        # по хорошему вообще нужно разлогинить пользователя, поскольку вероятно был подделан jwt
-        return jsonify({'status': 'error', 'code': 401, "error": "authorization_required", "message": "Access token is not valid2"}), 401
+        return authorization_error(401, 'authorization_required', 'Authentication required')
         
     if (payload.get('exp') <= time.time()):
-        return jsonify({'status': 'error', 'code': 401, "error": "refresh_required", "message": "Access token is out of date3"}), 401
+        return authorization_error(401, 'refresh_required', 'Access token expired')
 
     if payload.get('type') != access_type:
-        return jsonify({'status': 'error', 'code': 403, "error": "forbidden", "message": "insufficient access rights"}), 403
+        return authorization_error(403, 'forbidden', 'Insufficient access rights')
 
     g.user_id = payload.get('sub')
     g.user_type = payload.get('type')
@@ -129,16 +142,21 @@ def manageRefresh(refresh_token):
     except jwt.InvalidTokenError:
         raise Exception("Invalid refresh token")
 
-    refresh_token_data = db.get_refresh_token(user_id, refresh_token)
+    token_type = payload.get('type')
+    if token_type not in {'student_refresh', 'admin_refresh'}:
+        raise Exception('Invalid refresh token type')
+    is_admin = token_type == 'admin_refresh'
+
+    refresh_token_data = db.get_refresh_token(user_id, refresh_token, is_admin=is_admin)
     if not refresh_token_data: 
         raise Exception("Refresh token revoked or not found")
     
-    db.delete_refresh_token(user_id, refresh_token)  
+    db.delete_refresh_token(user_id, refresh_token, is_admin=is_admin)
 
-    if refresh_token_data["expires_at"] < datetime.now(timezone.utc):  
+    if refresh_token_data["expires_at"] < time.time():
         raise Exception("Refresh token revoked or not found")
         
-    new_access_token, new_refresh_token = manageRotaionJWT(user_id)
+    new_access_token, new_refresh_token = manageRotaionJWT(user_id, is_admin=is_admin)
 
     return new_access_token, new_refresh_token
 

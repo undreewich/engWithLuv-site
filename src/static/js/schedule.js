@@ -61,33 +61,29 @@ document.addEventListener('DOMContentLoaded', function() {
         const privacyConsent = document.getElementById('privacyConsent').checked;
         const termsConsent = document.getElementById('termsConsent').checked;
         const studentInfo = document.getElementById('studentInfo').value;
-        const contactTelegram = document.getElementById('contactTelegram').value;
-        const contactWhatsapp = document.getElementById('contactWhatsapp').value;
-        const contactEmail = document.getElementById('contactEmail').value;
         const successModal = document.getElementById('successModal');
+        const formError = document.getElementById('scheduleFormError');
+        formError.hidden = true;
+        formError.textContent = '';
 
         if (!privacyConsent || !termsConsent) {
-            alert('Необходимо принять Политику конфиденциальности и Пользовательское соглашение');
+            formError.textContent = 'Необходимо принять Политику конфиденциальности и Пользовательское соглашение.';
+            formError.hidden = false;
             return;
         }
         
         // Validate inputs
         if (selectedSlots.length === 0) {
-            alert('Пожалуйста, выберите хотя бы один период времени');
+            formError.textContent = 'Пожалуйста, выберите хотя бы один период времени.';
+            formError.hidden = false;
             return;
         }
         
         if (!studentInfo.trim()) {
-            alert('Пожалуйста, расскажите о себе');
+            formError.textContent = 'Пожалуйста, расскажите о себе.';
+            formError.hidden = false;
             return;
         }
-        
-        // Log to console
-        logSubmission(selectedSlots, studentInfo, {
-            telegram: contactTelegram,
-            whatsapp: contactWhatsapp,
-            email: contactEmail
-        });
         
         // Clear selection
         clearForm();
@@ -245,35 +241,6 @@ function updateSelectedSlotsDisplay() {
     
     displayContainer.innerHTML = slotsHTML;
 }
-
-// Log submission to console
-function logSubmission(slots, studentInfo, contacts) {
-    const submissionTimezoneOffset = timezoneOffsets[studentTimeZone];
-    const nowUTC = new Date();
-    const orderTimeUTC = nowUTC.toISOString();
-
-    // build takenTimes array (day, time as shown to student in current schedule timezone)
-    const takenTimes = slots.map(slot => {
-        const [dayIndex, hour, minutes] = slot.split('-');
-        const timeInStudentZone = getTimeInTimeZone(hour, dayIndex, studentTimeZone, baseTimeZone);
-        return { "dayIndexBase": dayIndex , "timeHourBase": hour, "timeMinutesBase": minutes, "dayIndexStudent": timeInStudentZone.dayIndex , "timeHourStudent": timeInStudentZone.hour };
-    });
-
-    const result = {
-        StudentTimeZone: studentTimeZone,
-        takenTimes,
-        StudentInfo: studentInfo,
-        orderTimeUTC: orderTimeUTC,
-        contacts: {
-            telegram: contacts.telegram,
-            whatsapp: contacts.whatsapp,
-            email: contacts.email
-        }
-    };
-
-    console.log(result);
-}
-
 
 // Clear form
 function clearForm() {

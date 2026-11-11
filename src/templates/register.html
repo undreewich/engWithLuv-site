@@ -89,6 +89,7 @@
             margin-top: 5px;
             display: none;
         }
+        .error-message.visible { display: block; }
         .submit-btn {
             width: 100%;
             padding: 12px;
@@ -176,6 +177,8 @@
             </div>
             <div class="error-message" id="agreementError">Необходимо принять Политику конфиденциальности и Пользовательское соглашение</div>
 
+            <div class="error-message" id="registerMessage" role="alert" aria-live="polite"></div>
+
             <button type="submit" class="submit-btn" id="submitBtn" disabled>Зарегистрироваться</button>
         </form>
         <div class="login-link">
@@ -219,11 +222,14 @@
                 const passwordError = document.getElementById('passwordError');
                 const confirmError = document.getElementById('confirmError');
                 const agreementError = document.getElementById('agreementError');
+                const registerMessage = document.getElementById('registerMessage');
 
                 emailError.style.display = 'none';
                 passwordError.style.display = 'none';
                 confirmError.style.display = 'none';
                 agreementError.style.display = 'none';
+                registerMessage.classList.remove('visible');
+                registerMessage.textContent = '';
 
                 let isValid = true;
 
@@ -277,7 +283,6 @@
                     }
 
                     const result = await response.json().catch((error) => {
-                        console.error('Сервер вернул некорректный ответ при регистрации:', error);
                         throw new Error('Сервер вернул некорректный ответ. Попробуйте позже.');
                     });
 
@@ -288,8 +293,8 @@
                     window.location.href = '/?registration=success';
                 } catch (error) {
                     const details = error instanceof Error ? error.message : '';
-                    console.error(`Не удалось завершить регистрацию: ${details || 'неизвестная ошибка'}`, error);
-                    alert(details || 'Не удалось завершить регистрацию. Попробуйте ещё раз.');
+                    registerMessage.textContent = details || 'Не удалось завершить регистрацию. Попробуйте ещё раз.';
+                    registerMessage.classList.add('visible');
                 }
             });
         });
