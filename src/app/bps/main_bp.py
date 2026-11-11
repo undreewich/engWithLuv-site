@@ -38,7 +38,6 @@ def terms():
 def register():
     if request.method == 'POST':
         payload = request.get_json(silent=True) or request.form.to_dict()
-        # print(f"Received registration data: {payload}")  # Debugging line
 
         emailConfirmToken = ACM.manageNewStudent(payload=payload)
         sendRegistrationConfirmationEmail(payload["email"], emailConfirmToken)
@@ -66,10 +65,10 @@ def login():
             access_token, refresh_token = ACM.manageRotaionJWT(user_id)
 
             response = jsonify({'status': 'success', 'code' : 200, 'message': 'successful login'})
-            # response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60)
-            # response.set_cookie(key="access_token", value=access_token, httponly=True, secure=True, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60)
-            response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=False, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60) #debug line
-            response.set_cookie(key="access_token", value=access_token, httponly=True, secure=False, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60) #debug line
+            response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=True, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60)
+            response.set_cookie(key="access_token", value=access_token, httponly=True, secure=True, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60)
+            # response.set_cookie(key="refresh_token", value=refresh_token, httponly=True, secure=False, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60) #debug line
+            # response.set_cookie(key="access_token", value=access_token, httponly=True, secure=False, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60) #debug line
 
             return response, 200
 
@@ -91,10 +90,10 @@ def refresh_access_token():
         return jsonify({"error": "Invalid or expired refresh token"}), 401
 
     response = jsonify({'status': 'success', 'code' : 200, 'message': 'successful refresh', 'access_token' : new_access_token})
-    # response.set_cookie(key="refresh_token", value=new_refresh_token, httponly=True, secure=True, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60)
-    # response.set_cookie(key="access_token", value=new_access_token, httponly=True, secure=True, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60)
-    response.set_cookie(key="refresh_token", value=new_refresh_token, httponly=True, secure=False, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60) #debug line
-    response.set_cookie(key="access_token", value=new_access_token, httponly=True, secure=False, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60) #debug line
+    response.set_cookie(key="refresh_token", value=new_refresh_token, httponly=True, secure=True, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60)
+    response.set_cookie(key="access_token", value=new_access_token, httponly=True, secure=True, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60)
+    # response.set_cookie(key="refresh_token", value=new_refresh_token, httponly=True, secure=False, samesite='Lax', max_age=config.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60) #debug line
+    # response.set_cookie(key="access_token", value=new_access_token, httponly=True, secure=False, samesite='Lax', max_age=config.ACCESS_TOKEN_EXPIRE_MINUTES * 60) #debug line
 
 
     return response, 200
