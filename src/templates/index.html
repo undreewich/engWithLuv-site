@@ -109,7 +109,9 @@
             <a class="register-link" href="{{ url_for('main.register') }}">Регистрация</a>
             <a href="{{ url_for('main.login') }}">Войти</a>
             <a class="account-link" href="{{ url_for('usr.student_dashboard') }}">Личный кабинет</a>
-            <button type="button" onclick="alert('Выход пока недоступен')">Выйти</button>
+            <form action="{{ url_for('main.logout') }}" method="get">
+                <button type="submit">Выйти</button>
+            </form>
         </nav>
 
         <!-- Header Section -->
