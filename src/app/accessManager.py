@@ -148,6 +148,25 @@ def decode_jwt(token: str | bytes,
     decoded = jwt.decode(token, secret_key, algorithms=[algorithm])
     return decoded
 
-def logout_user(access_token, refresh_token, is_admin=False):
-    user_id = decode_jwt(access_token)["sub"]
-    db.delete_refresh_token(user_id, refresh_token, is_admin=is_admin)  # Удаляем все refresh токены для пользователя
+def logout_user(refresh_token, is_admin=False):
+    if not refresh_token:
+        return False
+
+    try:
+        # Verify the signature but allow an expired token to be revoked during logout.
+        payload = jwt.decode(
+            refresh_token,
+            config.REFRESH_SECRET,
+            algorithms=[config.ALGORITHM],
+            options={"verify_exp": False},
+        )
+    except jwt.InvalidTokenError:
+        return False
+
+    expected_type = "admin_refresh" if is_admin else "student_refresh"
+    user_id = payload.get("sub")
+    if payload.get("type") != expected_type or not user_id:
+        return False
+
+    db.delete_refresh_token(user_id, refresh_token, is_admin=is_admin)
+    return True

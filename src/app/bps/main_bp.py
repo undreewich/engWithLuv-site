@@ -104,9 +104,16 @@ def forgot_password():
 
 @main_bp.route('/logout', methods=['GET'])
 def logout():
-    ACM.logout_user(access_token=request.cookies.get('access_token'), refresh_token=request.cookies.get('refresh_token'), is_admin=False)  # Удаляем refresh токен для текущего пользователя
-    # Здесь выполните логику выхода пользователя
+    refresh_token = request.cookies.get('refresh_token')
+    try:
+        ACM.logout_user(refresh_token=refresh_token, is_admin=False)
+    except Exception:
+        current_app.logger.exception("Не удалось отозвать refresh-токен при выходе")
+
     flash('Вы успешно вышли из системы.', 'success')
-    return redirect(url_for('main.index'))
+    response = redirect(url_for('main.index'))
+    response.delete_cookie('refresh_token', path='/', secure=True, httponly=True, samesite='Lax')
+    response.delete_cookie('access_token', path='/', secure=True, httponly=True, samesite='Lax')
+    return response
 
 
