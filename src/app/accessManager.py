@@ -148,3 +148,6 @@ def decode_jwt(token: str | bytes,
     decoded = jwt.decode(token, secret_key, algorithms=[algorithm])
     return decoded
 
+def logout_user(access_token, refresh_token, is_admin=False):
+    user_id = decode_jwt(access_token)["sub"]
+    db.delete_refresh_token(user_id, refresh_token, is_admin=is_admin)  # Удаляем все refresh токены для пользователя

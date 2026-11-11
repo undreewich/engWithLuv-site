@@ -104,6 +104,7 @@ def forgot_password():
 
 @main_bp.route('/logout', methods=['GET'])
 def logout():
+    ACM.logout_user(access_token=request.cookies.get('access_token'), refresh_token=request.cookies.get('refresh_token'), is_admin=False)  # Удаляем refresh токен для текущего пользователя
     # Здесь выполните логику выхода пользователя
     flash('Вы успешно вышли из системы.', 'success')
     return redirect(url_for('index'))
